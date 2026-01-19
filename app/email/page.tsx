@@ -68,15 +68,15 @@ export default function EmailCapturePage() {
   // If rid is missing OR invalid, show the fallback UI
   if (!ridStr || !ridNumber) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 sm:px-6">
+      <div className="min-h-screen bg-white text-black flex items-center justify-center px-4 sm:px-6">
         <div className="text-center max-w-xl">
           <h1 className="text-2xl font-bold mb-3">Something went wrong</h1>
-          <p className="text-gray-400 mb-6">
+          <p className="text-gray-600 mb-6">
             Result id missing. Please go back and submit again.
           </p>
           <button
             onClick={() => router.push('/blueprint')}
-            className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-6 py-3 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
           >
             Back to Blueprint
           </button>
@@ -86,19 +86,19 @@ export default function EmailCapturePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 sm:px-6">
-      <div className="w-full max-w-xl bg-gray-900 border border-gray-800 rounded-xl p-6 sm:p-8">
+    <div className="min-h-screen bg-white text-black flex items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-xl bg-gray-50 border border-gray-200 rounded-xl p-6 sm:p-8">
         <h1 className="text-2xl sm:text-3xl font-bold mb-3">
           Before we show your results
         </h1>
-        <p className="text-gray-400 text-sm sm:text-base mb-6">
+        <p className="text-gray-600 text-sm sm:text-base mb-6">
           Enter your email so we can deliver your blueprint and follow up with your results.
           You can continue regardless of payment.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-300 mb-2" htmlFor="email">
+            <label className="block text-sm text-gray-700 mb-2" htmlFor="email">
               Email address
             </label>
             <input
@@ -107,7 +107,7 @@ export default function EmailCapturePage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:border-gray-400 focus:outline-none"
               required
             />
           </div>
@@ -119,8 +119,8 @@ export default function EmailCapturePage() {
             disabled={isSubmitting}
             className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors ${
               isSubmitting
-                ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-black hover:bg-gray-200'
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-black text-white hover:bg-gray-800'
             }`}
           >
             {isSubmitting ? 'Saving...' : 'Continue to Results'}

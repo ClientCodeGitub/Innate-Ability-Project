@@ -40,15 +40,15 @@ export default function ProcessingPage() {
 
   if (!rid) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+      <div className="min-h-screen bg-white text-black flex items-center justify-center px-4">
         <div className="text-center max-w-xl">
           <h1 className="text-2xl font-bold mb-3">Something went wrong</h1>
-          <p className="text-gray-400 mb-6">
+          <p className="text-gray-600 mb-6">
             Result id missing. Please go back and submit again.
           </p>
           <button
             onClick={() => router.push('/blueprint')}
-            className="px-6 py-3 bg-white text-black font-semibold rounded-lg"
+            className="px-6 py-3 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
           >
             Back to Blueprint
           </button>
@@ -58,15 +58,15 @@ export default function ProcessingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 sm:px-6">
+    <div className="min-h-screen bg-white text-black flex items-center justify-center px-4 sm:px-6">
       <div className="text-center max-w-2xl">
         <div className="mb-6 sm:mb-8">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-t-4 border-b-4 border-white"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-t-4 border-b-4 border-black"></div>
         </div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-2">
           {messages[currentMessageIndex]}
         </h1>
-        <p className="text-gray-400 text-sm sm:text-base md:text-lg px-2">
+        <p className="text-gray-600 text-sm sm:text-base md:text-lg px-2">
           Processing your responses through our diagnostic framework...
         </p>
       </div>

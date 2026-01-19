@@ -85,11 +85,11 @@ export default function BlueprintPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white py-6 sm:py-12 px-4 sm:px-6">
+    <div className="min-h-screen bg-white text-black py-6 sm:py-12 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto">
         {/* Overall Progress */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex justify-between text-xs sm:text-sm text-gray-400 mb-2">
+          <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-2">
             <span>
               Question {currentStep + 1} of {totalQuestions}
             </span>
@@ -99,10 +99,10 @@ export default function BlueprintPage() {
         </div>
 
         {/* Pillar Indicator */}
-        <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gray-900 rounded-lg border border-gray-800">
-          <div className="text-xs sm:text-sm text-gray-400 mb-1">Current Pillar</div>
+        <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="text-xs sm:text-sm text-gray-600 mb-1">Current Pillar</div>
           <h2 className="text-xl sm:text-2xl font-semibold mb-2">{currentPillar.label}</h2>
-          <p className="text-gray-400 text-xs sm:text-sm mb-3">{currentPillar.description}</p>
+          <p className="text-gray-600 text-xs sm:text-sm mb-3">{currentPillar.description}</p>
           <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-500">
             <span>
               Pillar {pillarProgress} of {pillarTotal}
@@ -131,8 +131,10 @@ export default function BlueprintPage() {
         </div>
 
         {isSubmitting && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div className="text-white text-xl">Processing your responses...</div>
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white border border-gray-200 rounded-lg px-6 py-4 text-black text-xl">
+              Processing your responses...
+            </div>
           </div>
         )}
       </div>

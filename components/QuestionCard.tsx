@@ -37,7 +37,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             {question.options?.map((option) => (
               <label
                 key={option.id}
-                className="flex items-start sm:items-center p-3 sm:p-4 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-500 transition-colors"
+                className="flex items-start sm:items-center p-3 sm:p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
               >
                 <input
                   type="radio"
@@ -45,9 +45,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   value={option.value}
                   checked={value === option.value}
                   onChange={() => onChange(option.value)}
-                  className="mt-1 sm:mt-0 mr-3 w-4 h-4 sm:w-5 sm:h-5 text-white bg-gray-800 border-gray-600 focus:ring-white flex-shrink-0"
+                  className="mt-1 sm:mt-0 mr-3 w-4 h-4 sm:w-5 sm:h-5 text-black bg-white border-gray-400 focus:ring-black flex-shrink-0"
                 />
-                <span className="text-white text-sm sm:text-base">{option.label}</span>
+                <span className="text-black text-sm sm:text-base">{option.label}</span>
               </label>
             ))}
           </div>
@@ -60,7 +60,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             {question.options?.map((option) => (
               <label
                 key={option.id}
-                className="flex items-start sm:items-center p-3 sm:p-4 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-500 transition-colors"
+                className="flex items-start sm:items-center p-3 sm:p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
               >
                 <input
                   type="checkbox"
@@ -73,9 +73,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                       onChange(selectedValues.filter(v => v !== option.value));
                     }
                   }}
-                  className="mt-1 sm:mt-0 mr-3 w-4 h-4 sm:w-5 sm:h-5 text-white bg-gray-800 border-gray-600 focus:ring-white flex-shrink-0"
+                  className="mt-1 sm:mt-0 mr-3 w-4 h-4 sm:w-5 sm:h-5 text-black bg-white border-gray-400 focus:ring-black flex-shrink-0"
                 />
-                <span className="text-white text-sm sm:text-base">{option.label}</span>
+                <span className="text-black text-sm sm:text-base">{option.label}</span>
               </label>
             ))}
           </div>
@@ -85,7 +85,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         const scaleValue = typeof value === 'number' ? value : question.min || 1;
         return (
           <div className="space-y-4">
-            <div className="flex justify-between text-sm text-gray-400">
+            <div className="flex justify-between text-sm text-gray-600">
               <span>{question.minLabel}</span>
               <span>{question.maxLabel}</span>
             </div>
@@ -95,9 +95,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               max={question.max || 10}
               value={scaleValue}
               onChange={(e) => onChange(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-white"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
             />
-            <div className="text-center text-2xl font-bold text-white">
+            <div className="text-center text-2xl font-bold text-black">
               {scaleValue}
             </div>
           </div>
@@ -109,7 +109,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             value={typeof value === 'string' ? value : ''}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Type your answer here..."
-            className="w-full p-4 bg-gray-800 border-2 border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none resize-none"
+            className="w-full p-4 bg-white border-2 border-gray-300 rounded-lg text-black placeholder-gray-400 focus:border-gray-400 focus:outline-none resize-none"
             rows={4}
           />
         );
@@ -121,11 +121,11 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-3 sm:mb-4 leading-tight">
         {question.question}
       </h2>
       {question.description && (
-        <p className="text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base md:text-lg">
+        <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base md:text-lg">
           {question.description}
         </p>
       )}
@@ -138,8 +138,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           disabled={!canGoBack}
           className={`px-5 sm:px-6 py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
             canGoBack
-              ? 'border-2 border-white text-white hover:bg-white hover:text-black'
-              : 'border-2 border-gray-700 text-gray-700 cursor-not-allowed'
+              ? 'border-2 border-black text-black hover:bg-black hover:text-white'
+              : 'border-2 border-gray-300 text-gray-300 cursor-not-allowed'
           }`}
         >
           Back
@@ -153,8 +153,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             question.required && (value === null || value === undefined || 
               (Array.isArray(value) && value.length === 0) ||
               (typeof value === 'string' && value.trim() === ''))
-              ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-              : 'bg-white text-black hover:bg-gray-200'
+              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : 'bg-black text-white hover:bg-gray-800'
           }`}
         >
           {isLast ? 'Finish' : 'Next'}
