@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     const insertPayload: any = {
       answers,
       computed_result: computedResult,
-      unlocked: false,
+      is_paid: false,
       unlocked_at: null,
     };
 

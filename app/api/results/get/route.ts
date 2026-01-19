@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabaseAdmin
       .from("results")
-      .select("id, answers, computed_result, unlocked, unlocked_at, created_at, email")
+      .select("id, answers, computed_result, is_paid, unlocked_at, created_at, email")
       .eq("id", rid)
       .single();
 

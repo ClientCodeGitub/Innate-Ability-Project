@@ -11,7 +11,7 @@ type ResultRow = {
   id: number;
   answers: Record<string, any>;
   computed_result: ComputedResult;
-  unlocked: boolean;
+  is_paid: boolean;
   unlocked_at?: string | null;
   created_at?: string;
 };
@@ -91,14 +91,14 @@ export default function ResultsPage() {
   }
 
   const computedResult = result.computed_result;
-  const isUnlocked = !!result.unlocked;
+  const isPaid = !!result.is_paid;
 
   const handleUnlock = async () => {
     if (!rid) return;
 
     setIsUnlocking(true);
     try {
-      const response = await fetch('/api/lemonsqueezy/checkout', {
+      const response = await fetch('/api/lemon/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rid }),
@@ -152,7 +152,7 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      <div className={`max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 ${!isUnlocked ? 'blur-sm select-none pointer-events-none' : ''}`}>
+      <div className={`max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 ${!isPaid ? 'blur-sm select-none pointer-events-none' : ''}`}>
         {/* Primary Archetype Card */}
         <div className="mb-8 sm:mb-12 p-6 sm:p-8 md:p-10 bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl sm:rounded-2xl border-2 border-gray-800 shadow-xl">
           <div className="flex items-start justify-between mb-4 sm:mb-6 gap-4">
@@ -324,7 +324,7 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      {!isUnlocked && (
+      {!isPaid && (
         <PaywallOverlay
           onUnlock={handleUnlock}
           isLoading={isUnlocking}

@@ -30,7 +30,7 @@ npm install
 3. Copy your Store ID and Variant ID
 4. Generate an API key
 5. Set up webhook:
-   - Add webhook URL: `https://your-domain.com/api/lemonsqueezy/webhook`
+   - Add webhook URL: `https://your-domain.com/api/lemon/webhook`
    - Subscribe to order events (e.g. `order_created` or `order_paid`)
    - Copy the Webhook Secret
 
@@ -78,4 +78,4 @@ See `TESTING.md` for detailed testing instructions.
 - Never commit `.env.local` to git (it's in `.gitignore`)
 - Keep `SUPABASE_SERVICE_ROLE_KEY` and `LEMONSQUEEZY_API_KEY` secret
 - Webhook signature verification is critical - always verify signatures
-- Results are only unlocked via verified webhook, never from redirect alone
+- Results are only marked paid via verified webhook, never from redirect alone

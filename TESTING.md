@@ -35,7 +35,7 @@
 
 1. **Initiate Checkout**
    - On results page, click "Pay to Unlock"
-   - Should call `/api/lemonsqueezy/checkout` with `rid`
+   - Should call `/api/lemon/checkout` with `rid`
    - Should redirect to Lemon Squeezy checkout page
 
 2. **Complete Payment**
@@ -52,7 +52,7 @@
 
 1. Go to Lemon Squeezy dashboard > Webhooks
 2. Send event: `order_created` or `order_paid`
-3. Set webhook URL to: `http://localhost:3000/api/lemonsqueezy/webhook` (use ngrok for local testing)
+3. Set webhook URL to: `http://localhost:3000/api/lemon/webhook` (use ngrok for local testing)
 4. Ensure payload contains `meta.custom_data.rid`
 
 ### Option B: Manual Database Update (for testing only)
@@ -61,7 +61,7 @@
 
 ```sql
 UPDATE results 
-SET unlocked = true, 
+SET is_paid = true, 
     unlocked_at = NOW()
 WHERE id = 'your-result-id';
 ```
@@ -71,7 +71,7 @@ WHERE id = 'your-result-id';
 1. Install ngrok: `brew install ngrok` (Mac) or download from ngrok.com
 2. Start ngrok: `ngrok http 3000`
 3. Copy the ngrok URL (e.g., `https://abc123.ngrok.io`)
-4. Update Lemon Squeezy webhook URL to: `https://abc123.ngrok.io/api/lemonsqueezy/webhook`
+4. Update Lemon Squeezy webhook URL to: `https://abc123.ngrok.io/api/lemon/webhook`
 5. Complete a real payment in Lemon Squeezy
 6. Lemon Squeezy will send webhook to your local server
 
@@ -86,8 +86,8 @@ WHERE id = 'your-result-id';
 2. **Verify Database**
    - Check Supabase dashboard
    - `results` table should show:
-     - `unlocked = true`
-    - `unlocked_at` timestamp set
+     - `is_paid = true`
+     - `unlocked_at` timestamp set
 
 ## Edge Cases to Test
 
@@ -128,7 +128,7 @@ WHERE id = 'your-result-id';
 
 3. **Check Database**
    - Verify row exists in `results` table
-   - Check `unlocked` status
+   - Check `is_paid` status
    - Verify `computed_result` JSON is valid
 
 4. **Check Frontend**

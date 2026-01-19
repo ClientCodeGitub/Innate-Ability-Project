@@ -59,12 +59,12 @@ Open [http://localhost:3000](http://localhost:3000)
 │   │   ├── results/
 │   │   │   ├── create/route.ts    # Create result from answers
 │   │   │   └── get/route.ts       # Get result by ID
-│   │   └── lemonsqueezy/
+│   │   └── lemon/
 │   │       ├── checkout/route.ts      # Create Lemon Squeezy checkout
 │   │       └── webhook/route.ts       # Handle Lemon Squeezy webhooks
 │   ├── blueprint/page.tsx          # Multi-step questionnaire
 │   ├── processing/page.tsx         # Loading/processing page
-│   ├── results/page.tsx            # Results display (locked/unlocked)
+│   ├── results/page.tsx            # Results display (locked/paid)
 │   ├── email/page.tsx              # Email capture page
 │   └── page.tsx                    # Home page
 ├── components/
@@ -92,13 +92,13 @@ See [TESTING.md](./TESTING.md) for comprehensive testing instructions.
 ## 🔒 Security Implementation
 
 ### Payment Unlock Flow
-1. User completes blueprint → Results stored with `unlocked=false`
+1. User completes blueprint → Results stored with `is_paid=false`
 2. User clicks "Unlock" → Redirected to Lemon Squeezy checkout
 3. User completes payment → Lemon Squeezy sends webhook
 4. **Webhook handler verifies signature** → Updates database
 5. User returns → Results page checks database → Shows unblurred content
 
-**Critical**: Results are NEVER unlocked from the success redirect alone. Only verified webhooks can unlock content.
+**Critical**: Results are NEVER unlocked from the success redirect alone. Only verified webhooks can mark `is_paid=true`.
 
 ## 📊 Archetype System
 
@@ -118,8 +118,8 @@ Results include:
 ## 🌐 Lemon Squeezy Integration
 
 This implementation uses **Lemon Squeezy API** for one-time payments:
-- Checkout creation via `/api/lemonsqueezy/checkout`
-- Webhook handling via `/api/lemonsqueezy/webhook`
+- Checkout creation via `/api/lemon/checkout`
+- Webhook handling via `/api/lemon/webhook`
 - Custom metadata links payments to results
 
 ## 📝 Environment Variables

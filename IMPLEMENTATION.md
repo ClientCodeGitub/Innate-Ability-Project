@@ -16,8 +16,8 @@
   - `email` (text)
   - `answers` (JSONB)
   - `computed_result` (JSONB)
-  - `unlocked` (boolean, default false)
-  - `unlocked_at` (timestamp, nullable)
+        - `is_paid` (boolean, default false)
+        - `unlocked_at` (timestamp, nullable)
 - ✅ Indexes for performance
 - ✅ SQL file provided: `supabase-schema.sql`
 
@@ -53,7 +53,7 @@
 - ✅ `/results` page:
   - Reads `rid` from query
   - Fetches from `/api/results/get`
-  - If `unlocked=false`:
+      - If `is_paid=false`:
     - Shows blurred content (CSS `blur-sm`)
     - Displays paywall overlay with:
       - Title: "Your results are ready."
@@ -61,30 +61,30 @@
       - 4 bullet points
       - Price: "$19 — one-time unlock"
       - CTA: "Unlock My Results"
-  - If `unlocked=true`:
+      - If `is_paid=true`:
     - Shows full unblurred content
 
 ### F) Lemon Squeezy Checkout Integration
-- ✅ `/api/lemonsqueezy/checkout` endpoint:
+- ✅ `/api/lemon/checkout` endpoint:
   - Accepts `{ rid }` in request body
   - Validates with Zod
   - Creates Lemon Squeezy checkout with custom metadata
   - Returns checkout URL for redirect
 
 ### G) Lemon Squeezy Webhook (Critical Security)
-- ✅ `/api/lemonsqueezy/webhook` endpoint:
+- ✅ `/api/lemon/webhook` endpoint:
   - Verifies signature with `LEMONSQUEEZY_WEBHOOK_SECRET`
   - Handles order events (`order_created` / `order_paid`)
   - Extracts `rid` from custom metadata
   - Updates database:
-    - `unlocked = true`
-    - `unlocked_at = NOW()`
+          - `is_paid = true`
+          - `unlocked_at = NOW()`
   - Idempotent (handles duplicate webhooks)
   - Returns 200 OK quickly
 
 ### H) Results Page Gating
 - ✅ `/results`:
-  - Locked results show paywall
+  - Locked results show paywall (`is_paid=false`)
   - Checkout redirect handled via Lemon Squeezy
 
 ### I) Environment Variables
@@ -147,8 +147,8 @@
 - `lib/scoring.ts` - Scoring algorithm
 - `app/api/results/create/route.ts` - Create result API
 - `app/api/results/get/route.ts` - Get result API
-- `app/api/lemonsqueezy/checkout/route.ts` - Lemon Squeezy checkout API
-- `app/api/lemonsqueezy/webhook/route.ts` - Lemon Squeezy webhook handler
+- `app/api/lemon/checkout/route.ts` - Lemon Squeezy checkout API
+- `app/api/lemon/webhook/route.ts` - Lemon Squeezy webhook handler
 - `app/blueprint/page.tsx` - Blueprint questionnaire
 - `app/processing/page.tsx` - Processing page
 - `app/results/page.tsx` - Results page

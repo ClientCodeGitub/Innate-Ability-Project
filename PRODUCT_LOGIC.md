@@ -259,7 +259,7 @@ Evidence is collected from all questions where the user selected answers matchin
 - All answers stored as JSONB
 - Computed result stored as JSONB
 - No PII required
-- Results unlocked by default (no payment)
+- Results are locked until payment (`is_paid=true`)
 
 ### Result Generation
 - Server-side computation
