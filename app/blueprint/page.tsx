@@ -75,9 +75,7 @@ export default function BlueprintPage() {
       const ridStr = String(rid);
       console.log('Created result rid:', ridStr);
 
-      router.push(`/processing?rid=${encodeURIComponent(ridStr)}`);
-      // If you want to skip processing:
-      // router.push(`/results?rid=${encodeURIComponent(ridStr)}`);
+      router.push(`/email?rid=${encodeURIComponent(ridStr)}`);
     } catch (error) {
       console.error('Submit error:', error);
       alert('An error occurred. Please try again.');

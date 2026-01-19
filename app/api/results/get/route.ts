@@ -3,6 +3,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase";
 
 const getSchema = z.object({
+  // ✅ Accepts ?rid=25 (string) and converts it to number 25
   rid: z.coerce.number().int().positive(),
 });
 
@@ -23,11 +24,11 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabaseAdmin
       .from("results")
-      .select("id, answers, computed_result, unlocked, unlocked_at, created_at")
+      .select("id, answers, computed_result, unlocked, unlocked_at, created_at, email")
       .eq("id", rid)
       .single();
 
-    if (error) {
+    if (error || !data) {
       console.error("Database error (get result):", error);
       return NextResponse.json({ error: "Result not found" }, { status: 404 });
     }

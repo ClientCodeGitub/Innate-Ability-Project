@@ -4,7 +4,7 @@
 
 1. ✅ All environment variables are configured
 2. ✅ Supabase table is created
-3. ✅ Paddle product is set up
+3. ✅ Lemon Squeezy store, variant, and webhook are set up
 4. ✅ Development server is running
 
 ## Test Flow 1: Complete Blueprint → Results Blurred
@@ -15,15 +15,15 @@
    - Should navigate to `/blueprint`
 
 2. **Complete Questions**
-   - Answer all 15 questions
+   - Answer all 16 questions
    - Progress bar should update
    - Can navigate back/forward
    - Required questions prevent moving forward if unanswered
 
 3. **Submit Answers**
    - Click "Finish" on last question
-   - Should redirect to `/processing?rid=...`
-   - Processing page shows staged messages for ~5 seconds
+   - Should redirect to `/email?rid=...`
+   - Submit email → Redirect to `/results?rid=...`
 
 4. **View Results (Locked)**
    - Should redirect to `/results?rid=...`
@@ -31,40 +31,29 @@
    - Paywall overlay should be visible
    - Content should not be readable
 
-## Test Flow 2: Click Unlock → Paddle Checkout
+## Test Flow 2: Click Unlock → Lemon Squeezy Checkout
 
 1. **Initiate Checkout**
-   - On results page, click "Unlock My Results"
-   - Should call `/api/paddle/checkout` with `rid`
-   - Should redirect to Paddle checkout page
+   - On results page, click "Pay to Unlock"
+   - Should call `/api/lemonsqueezy/checkout` with `rid`
+   - Should redirect to Lemon Squeezy checkout page
 
-2. **Complete Payment (Sandbox)**
-   - Use Paddle sandbox test card: `4242 4242 4242 4242`
-   - Expiry: Any future date
-   - CVV: Any 3 digits
-   - Complete checkout
+2. **Complete Payment**
+   - Complete checkout in Lemon Squeezy
+   - Return to your site via success redirect
 
-3. **Return to Success Page**
-   - Should redirect to `/unlock/success?rid=...`
-   - Shows "Payment received, unlocking..."
-   - Polls backend for unlock status
+3. **Return to Results Page**
+   - Should redirect back to `/results?rid=...`
+   - Webhook unlocks results
 
 ## Test Flow 3: Simulate Webhook → Results Unlocked
 
-### Option A: Use Paddle Sandbox Webhook Simulator
+### Option A: Use Lemon Squeezy Webhook Simulator
 
-1. Go to Paddle Dashboard > Developer Tools > Webhook Simulator
-2. Select event: `payment_succeeded`
-3. Set webhook URL to: `http://localhost:3000/api/paddle/webhook` (use ngrok for local testing)
-4. Include in payload:
-   ```json
-   {
-     "passthrough": "{\"rid\":\"your-result-id\"}",
-     "subscription_id": "test-transaction-123",
-     "user_id": "test-customer-123"
-   }
-   ```
-5. Send webhook
+1. Go to Lemon Squeezy dashboard > Webhooks
+2. Send event: `order_created` or `order_paid`
+3. Set webhook URL to: `http://localhost:3000/api/lemonsqueezy/webhook` (use ngrok for local testing)
+4. Ensure payload contains `meta.custom_data.rid`
 
 ### Option B: Manual Database Update (for testing only)
 
@@ -73,9 +62,7 @@
 ```sql
 UPDATE results 
 SET unlocked = true, 
-    unlocked_at = NOW(),
-    paddle_transaction_id = 'test-123',
-    paddle_customer_id = 'test-customer-123'
+    unlocked_at = NOW()
 WHERE id = 'your-result-id';
 ```
 
@@ -84,9 +71,9 @@ WHERE id = 'your-result-id';
 1. Install ngrok: `brew install ngrok` (Mac) or download from ngrok.com
 2. Start ngrok: `ngrok http 3000`
 3. Copy the ngrok URL (e.g., `https://abc123.ngrok.io`)
-4. Update Paddle webhook URL to: `https://abc123.ngrok.io/api/paddle/webhook`
-5. Complete a real payment in Paddle sandbox
-6. Paddle will send webhook to your local server
+4. Update Lemon Squeezy webhook URL to: `https://abc123.ngrok.io/api/lemonsqueezy/webhook`
+5. Complete a real payment in Lemon Squeezy
+6. Lemon Squeezy will send webhook to your local server
 
 ## Test Flow 4: Verify Unlock
 
@@ -100,9 +87,7 @@ WHERE id = 'your-result-id';
    - Check Supabase dashboard
    - `results` table should show:
      - `unlocked = true`
-     - `unlocked_at` timestamp set
-     - `paddle_transaction_id` populated
-     - `paddle_customer_id` populated (if available)
+    - `unlocked_at` timestamp set
 
 ## Edge Cases to Test
 
@@ -110,7 +95,7 @@ WHERE id = 'your-result-id';
 - ✅ Missing result → Should show error
 - ✅ Webhook without `rid` → Should log error but return 200
 - ✅ Duplicate webhook events → Should be idempotent (no error)
-- ✅ Payment cancelled → Should show cancel page
+- ✅ Payment cancelled → Should return to results page
 - ✅ Network errors → Should show appropriate error messages
 
 ## Expected Behavior
@@ -118,7 +103,7 @@ WHERE id = 'your-result-id';
 ### Security Checks
 - ✅ Results never unlock from redirect alone
 - ✅ Results only unlock from verified webhook
-- ✅ Webhook signature is verified
+- ✅ Webhook signature is verified via Lemon Squeezy
 - ✅ Invalid signatures are rejected (401)
 
 ### User Experience
@@ -126,7 +111,7 @@ WHERE id = 'your-result-id';
 - ✅ Processing page provides feedback
 - ✅ Results page shows blurred content when locked
 - ✅ Paywall overlay is clear and compelling
-- ✅ Success page polls for unlock status
+- ✅ Results become readable after webhook unlock
 - ✅ Results become readable after unlock
 
 ## Debugging Tips
@@ -137,7 +122,7 @@ WHERE id = 'your-result-id';
    - Check Supabase connection
 
 2. **Check Webhook**
-   - Use Paddle webhook logs to see sent events
+   - Use Lemon Squeezy webhook logs to see sent events
    - Check server logs for received webhooks
    - Verify signature verification is working
 
@@ -154,13 +139,13 @@ WHERE id = 'your-result-id';
 ## Common Issues
 
 **Issue**: Webhook not received
-- **Solution**: Use ngrok for local testing, verify webhook URL in Paddle dashboard
+- **Solution**: Use ngrok for local testing, verify webhook URL in Lemon Squeezy dashboard
 
-**Issue**: Signature verification fails
-- **Solution**: Ensure `PADDLE_PUBLIC_KEY` is correct, check webhook payload format
+**Issue**: Webhook not unlocking
+- **Solution**: Ensure Lemon Squeezy webhook is sending `order_created`/`order_paid` and `meta.custom_data.rid` is present
 
 **Issue**: Results not unlocking
-- **Solution**: Check webhook logs, verify `rid` is in passthrough, check database update
+- **Solution**: Check webhook logs, verify `meta.custom_data.rid` is present, check database update
 
 **Issue**: Checkout not working
-- **Solution**: Verify Paddle credentials, check product ID, ensure API key has correct permissions
+- **Solution**: Verify Lemon Squeezy credentials, check store/variant IDs, ensure webhook secret is correct

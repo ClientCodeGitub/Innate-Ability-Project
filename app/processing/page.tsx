@@ -18,10 +18,7 @@ export default function ProcessingPage() {
 
   const rid = useMemo(() => {
     const ridParam = searchParams.get('rid');
-    if (!ridParam) return null;
-    const n = Number(ridParam);
-    if (!Number.isInteger(n) || n <= 0) return null;
-    return n;
+    return ridParam && ridParam.length > 0 ? ridParam : null;
   }, [searchParams]);
 
   useEffect(() => {
@@ -32,7 +29,7 @@ export default function ProcessingPage() {
     }, 1000);
 
     const timeout = setTimeout(() => {
-      router.push(`/results?rid=${rid}`);
+      router.push(`/results?rid=${encodeURIComponent(String(rid))}`);
     }, 5000);
 
     return () => {

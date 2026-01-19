@@ -3,9 +3,10 @@ import React from 'react';
 interface PaywallOverlayProps {
   onUnlock: () => void;
   isLoading?: boolean;
+  buttonLabel?: string;
 }
 
-const PaywallOverlay: React.FC<PaywallOverlayProps> = ({ onUnlock, isLoading = false }) => {
+const PaywallOverlay: React.FC<PaywallOverlayProps> = ({ onUnlock, isLoading = false, buttonLabel }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
       <div className="bg-gray-900 border-2 border-gray-700 rounded-lg max-w-2xl w-full p-8 md:p-12 text-center">
@@ -65,7 +66,7 @@ const PaywallOverlay: React.FC<PaywallOverlayProps> = ({ onUnlock, isLoading = f
               : 'hover:bg-gray-200'
           }`}
         >
-          {isLoading ? 'Processing...' : 'Unlock My Results'}
+          {isLoading ? 'Processing...' : (buttonLabel || 'Unlock My Results')}
         </button>
       </div>
     </div>

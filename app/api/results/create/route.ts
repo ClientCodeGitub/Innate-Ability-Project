@@ -43,15 +43,13 @@ export async function POST(request: NextRequest) {
 
     const computedResult = computeResult(answers);
 
-    // Build insert object (only include unlocked_at if column exists)
+    // Build insert object (locked by default until payment is completed)
     const insertPayload: any = {
       answers,
       computed_result: computedResult,
-      unlocked: true,
+      unlocked: false,
+      unlocked_at: null,
     };
-
-    // If you created unlocked_at column, keep it. Otherwise remove this line.
-    insertPayload.unlocked_at = new Date().toISOString();
 
     const { data, error } = await supabaseAdmin
       .from('results')

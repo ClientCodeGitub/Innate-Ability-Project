@@ -4,31 +4,26 @@
 
 ### A) Routes & Pages
 - ✅ `/` - Home page with "Start Blueprint" CTA
-- ✅ `/blueprint` - Multi-step question flow (15 questions)
+- ✅ `/blueprint` - Multi-step question flow (16 questions)
 - ✅ `/processing` - Staged loading messages (3-5 seconds)
 - ✅ `/results?rid=...` - Results display with paywall overlay
-- ✅ `/unlock/success` - Payment success page with polling
-- ✅ `/unlock/cancel` - Payment cancellation page
+- ✅ `/email` - Email capture before results
 
 ### B) Database Schema
 - ✅ `results` table with all required fields:
-  - `id` (UUID, primary key)
+  - `id` (primary key)
   - `created_at` (timestamp)
+  - `email` (text)
   - `answers` (JSONB)
   - `computed_result` (JSONB)
   - `unlocked` (boolean, default false)
   - `unlocked_at` (timestamp, nullable)
-  - `paddle_transaction_id` (text, nullable)
-  - `paddle_customer_id` (text, nullable)
 - ✅ Indexes for performance
 - ✅ SQL file provided: `supabase-schema.sql`
 
 ### C) Blueprint Questions System
-- ✅ `/lib/questions.ts` with 15 questions:
+- ✅ `/lib/questions.ts` with 16 questions:
   - Single choice (radio)
-  - Multiple choice (checkbox)
-  - Scale (1-10 slider)
-  - Text (textarea)
 - ✅ Multi-step UI with:
   - Progress bar
   - Question navigation (next/back)
@@ -42,16 +37,16 @@
 
 ### D) Results Generation
 - ✅ `/lib/scoring.ts` with deterministic scoring:
-  - 6 archetypes: Builder, Strategist, Executor, Creator, Optimizer, Connector
+  - 4 archetypes: Executor, Strategist, Optimizer, Connector
   - Maps question answers to archetype points
-  - Handles scale questions
   - Outputs `ComputedResult` structure:
     - `archetype` (primary)
     - `secondary` (optional)
     - `scores` (all archetype scores)
-    - `strengthSignals` (3 items)
-    - `blindSpots` (2-3 items)
-    - `bestEnvironments` (3 items)
+    - `evidence`
+    - `reliefFraming`
+    - `activationConditions`
+    - `antiPatterns`
     - `sevenDayPlan` (7 items)
 
 ### E) Results Page Gating
@@ -69,38 +64,28 @@
   - If `unlocked=true`:
     - Shows full unblurred content
 
-### F) Paddle Checkout Integration
-- ✅ `/api/paddle/checkout` endpoint:
+### F) Lemon Squeezy Checkout Integration
+- ✅ `/api/lemonsqueezy/checkout` endpoint:
   - Accepts `{ rid }` in request body
   - Validates with Zod
-  - Creates Paddle Classic checkout URL
-  - Includes `rid` in `passthrough` metadata
-  - Sets success URL: `/unlock/success?rid=...`
-  - Returns `{ url }` for redirect
-- ✅ Frontend integration:
-  - "Unlock My Results" button calls API
-  - Redirects to Paddle checkout
+  - Creates Lemon Squeezy checkout with custom metadata
+  - Returns checkout URL for redirect
 
-### G) Paddle Webhook (Critical Security)
-- ✅ `/api/paddle/webhook` endpoint:
-  - Verifies webhook signature (RSA-SHA1)
-  - Handles `payment_succeeded` events
-  - Extracts `rid` from `passthrough`
+### G) Lemon Squeezy Webhook (Critical Security)
+- ✅ `/api/lemonsqueezy/webhook` endpoint:
+  - Verifies signature with `LEMONSQUEEZY_WEBHOOK_SECRET`
+  - Handles order events (`order_created` / `order_paid`)
+  - Extracts `rid` from custom metadata
   - Updates database:
     - `unlocked = true`
     - `unlocked_at = NOW()`
-    - `paddle_transaction_id`
-    - `paddle_customer_id`
   - Idempotent (handles duplicate webhooks)
   - Returns 200 OK quickly
 
-### H) Unlock Success Page
-- ✅ `/unlock/success`:
-  - Reads `rid` from query
-  - Shows "Unlocking..." message
-  - Polls `/api/results/get` every 2 seconds
-  - Redirects to results when unlocked
-  - Does NOT unlock anything itself (security)
+### H) Results Page Gating
+- ✅ `/results`:
+  - Locked results show paywall
+  - Checkout redirect handled via Lemon Squeezy
 
 ### I) Environment Variables
 - ✅ Template file: `env.example`
@@ -109,11 +94,10 @@
   - `SUPABASE_URL`
   - `SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY`
-  - `PADDLE_VENDOR_ID`
-  - `PADDLE_API_KEY`
-  - `PADDLE_PRODUCT_ID`
-  - `PADDLE_PUBLIC_KEY`
-- ✅ Paddle Classic API chosen (simpler for one-time payments)
+  - `LEMONSQUEEZY_API_KEY`
+  - `LEMONSQUEEZY_STORE_ID`
+  - `LEMONSQUEEZY_VARIANT_ID`
+  - `LEMONSQUEEZY_WEBHOOK_SECRET`
 
 ### J) Code Quality
 - ✅ Server-side routes in App Router: `/app/api/**/route.ts`
@@ -133,8 +117,8 @@
 ## 🔒 Security Implementation
 
 ### Critical Security Rules Followed:
-1. ✅ **Never unlock from redirect alone** - Only webhooks can unlock
-2. ✅ **Webhook signature verification** - RSA-SHA1 verification
+1. ✅ **Never unlock without payment** - Capture or webhook required
+2. ✅ **Webhook signature verification** - Lemon Squeezy HMAC
 3. ✅ **Database-backed state** - Results page queries DB for unlock status
 4. ✅ **Server-side computation** - Results generated server-side
 5. ✅ **Input validation** - Zod schemas for all inputs
@@ -163,13 +147,12 @@
 - `lib/scoring.ts` - Scoring algorithm
 - `app/api/results/create/route.ts` - Create result API
 - `app/api/results/get/route.ts` - Get result API
-- `app/api/paddle/checkout/route.ts` - Paddle checkout API
-- `app/api/paddle/webhook/route.ts` - Paddle webhook handler
+- `app/api/lemonsqueezy/checkout/route.ts` - Lemon Squeezy checkout API
+- `app/api/lemonsqueezy/webhook/route.ts` - Lemon Squeezy webhook handler
 - `app/blueprint/page.tsx` - Blueprint questionnaire
 - `app/processing/page.tsx` - Processing page
 - `app/results/page.tsx` - Results page
-- `app/unlock/success/page.tsx` - Success page
-- `app/unlock/cancel/page.tsx` - Cancel page
+- `app/email/page.tsx` - Email capture page
 - `components/ProgressBar.tsx` - Progress component
 - `components/QuestionCard.tsx` - Question component
 - `components/PaywallOverlay.tsx` - Paywall component
@@ -188,7 +171,7 @@
 ## 🚀 Next Steps
 
 1. Set up Supabase project and run schema SQL
-2. Set up Paddle account and create product
+2. Set up Lemon Squeezy store, variant, and webhook
 3. Configure environment variables
 4. Test the complete flow
 5. Deploy to production

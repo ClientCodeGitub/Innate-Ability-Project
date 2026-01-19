@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import MethodologyDisclaimer from '@/components/MethodologyDisclaimer';
+import PaywallOverlay from '@/components/PaywallOverlay';
 import { ComputedResult } from '@/lib/scoring';
 import { totalQuestions } from '@/lib/questions';
 
@@ -21,15 +22,13 @@ export default function ResultsPage() {
 
   const rid = useMemo(() => {
     const ridParam = searchParams.get('rid');
-    if (!ridParam) return null;
-    const n = Number(ridParam);
-    if (!Number.isInteger(n) || n <= 0) return null;
-    return n;
+    return ridParam && ridParam.length > 0 ? ridParam : null;
   }, [searchParams]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ResultRow | null>(null);
+  const [isUnlocking, setIsUnlocking] = useState(false);
 
   useEffect(() => {
     if (!rid) {
@@ -43,7 +42,7 @@ export default function ResultsPage() {
       setError(null);
 
       try {
-        const res = await fetch(`/api/results/get?rid=${rid}`, { cache: 'no-store' });
+        const res = await fetch(`/api/results/get?rid=${encodeURIComponent(rid)}`, { cache: 'no-store' });
         const data = await res.json();
 
         if (!res.ok) {
@@ -92,9 +91,43 @@ export default function ResultsPage() {
   }
 
   const computedResult = result.computed_result;
+  const isUnlocked = !!result.unlocked;
+
+  const handleUnlock = async () => {
+    if (!rid) return;
+
+    setIsUnlocking(true);
+    try {
+      const response = await fetch('/api/lemonsqueezy/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rid }),
+      });
+
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        console.error('Checkout error:', data);
+        alert(data?.error || 'Failed to start checkout. Please try again.');
+        setIsUnlocking(false);
+        return;
+      }
+
+      if (!data?.url) {
+        alert('Checkout URL missing. Please try again.');
+        setIsUnlocking(false);
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (e) {
+      console.error('Checkout error:', e);
+      alert('An error occurred. Please try again.');
+      setIsUnlocking(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative">
       {/* Header Section */}
       <div className="border-b border-gray-800 bg-gray-900/50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -119,7 +152,7 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className={`max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 ${!isUnlocked ? 'blur-sm select-none pointer-events-none' : ''}`}>
         {/* Primary Archetype Card */}
         <div className="mb-8 sm:mb-12 p-6 sm:p-8 md:p-10 bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl sm:rounded-2xl border-2 border-gray-800 shadow-xl">
           <div className="flex items-start justify-between mb-4 sm:mb-6 gap-4">
@@ -290,6 +323,14 @@ export default function ResultsPage() {
           </button>
         </div>
       </div>
+
+      {!isUnlocked && (
+        <PaywallOverlay
+          onUnlock={handleUnlock}
+          isLoading={isUnlocking}
+          buttonLabel="Pay to Unlock"
+        />
+      )}
     </div>
   );
 }

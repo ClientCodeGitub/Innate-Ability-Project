@@ -4,7 +4,7 @@
 
 - Node.js 18+ installed
 - A Supabase account and project
-- A Paddle account (Classic API)
+- A Lemon Squeezy account
 
 ## Step 1: Install Dependencies
 
@@ -23,23 +23,16 @@ npm install
    - `anon` public key
    - `service_role` key (keep this secret!)
 
-## Step 3: Set Up Paddle
+## Step 3: Set Up Lemon Squeezy
 
-1. Sign up for Paddle at https://paddle.com
-2. Go to your Paddle vendor dashboard
-3. Create a product:
-   - Product name: "Innate Ability Unlock"
-   - Price: $19.00 USD (one-time payment)
-   - Note the Product ID
-4. Get your API credentials:
-   - Vendor ID (found in Account Settings)
-   - API Key (generate in Developer Tools > Authentication)
-   - Public Key (for webhook verification, found in Developer Tools > Notifications)
+1. Sign up at https://www.lemonsqueezy.com/
+2. Create a product and variant
+3. Copy your Store ID and Variant ID
+4. Generate an API key
 5. Set up webhook:
-   - Go to Developer Tools > Notifications
-   - Add webhook URL: `https://your-domain.com/api/paddle/webhook`
-   - Select events: `payment_succeeded`, `subscription_payment_succeeded`
-   - Save the webhook secret (if provided) or use Public Key for verification
+   - Add webhook URL: `https://your-domain.com/api/lemonsqueezy/webhook`
+   - Subscribe to order events (e.g. `order_created` or `order_paid`)
+   - Copy the Webhook Secret
 
 ## Step 4: Configure Environment Variables
 
@@ -54,10 +47,10 @@ npm install
    SUPABASE_URL=your_supabase_url
    SUPABASE_ANON_KEY=your_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   PADDLE_VENDOR_ID=your_vendor_id
-   PADDLE_API_KEY=your_api_key
-   PADDLE_PRODUCT_ID=your_product_id
-   PADDLE_PUBLIC_KEY=your_public_key
+   LEMONSQUEEZY_API_KEY=your_lemonsqueezy_api_key
+   LEMONSQUEEZY_STORE_ID=your_lemonsqueezy_store_id
+   LEMONSQUEEZY_VARIANT_ID=your_lemonsqueezy_variant_id
+   LEMONSQUEEZY_WEBHOOK_SECRET=your_lemonsqueezy_webhook_secret
    ```
 
 ## Step 5: Run the Development Server
@@ -76,13 +69,13 @@ See `TESTING.md` for detailed testing instructions.
 
 1. Deploy to Vercel, Netlify, or your preferred hosting
 2. Update `NEXT_PUBLIC_BASE_URL` to your production domain
-3. Update Paddle webhook URL to your production domain
-4. Use production Paddle keys (not sandbox)
+3. Update Lemon Squeezy webhook URL to your production domain
+4. Use production Lemon Squeezy credentials
 5. Ensure environment variables are set in your hosting platform
 
 ## Important Security Notes
 
 - Never commit `.env.local` to git (it's in `.gitignore`)
-- Keep `SUPABASE_SERVICE_ROLE_KEY` and `PADDLE_API_KEY` secret
+- Keep `SUPABASE_SERVICE_ROLE_KEY` and `LEMONSQUEEZY_API_KEY` secret
 - Webhook signature verification is critical - always verify signatures
 - Results are only unlocked via verified webhook, never from redirect alone

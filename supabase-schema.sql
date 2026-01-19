@@ -5,17 +5,20 @@
 CREATE TABLE IF NOT EXISTS results (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  email TEXT,
   answers JSONB NOT NULL,
   computed_result JSONB NOT NULL,
   unlocked BOOLEAN DEFAULT FALSE NOT NULL,
-  unlocked_at TIMESTAMP WITH TIME ZONE,
-  paddle_transaction_id TEXT,
-  paddle_customer_id TEXT
+  unlocked_at TIMESTAMP WITH TIME ZONE
 );
+
+-- Add email column if table already exists
+ALTER TABLE results ADD COLUMN IF NOT EXISTS email TEXT;
+-- Add unlocked_at column if table already exists
+ALTER TABLE results ADD COLUMN IF NOT EXISTS unlocked_at TIMESTAMP WITH TIME ZONE;
 
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_results_unlocked ON results(unlocked);
-CREATE INDEX IF NOT EXISTS idx_results_paddle_transaction ON results(paddle_transaction_id);
 
 -- Enable Row Level Security (optional, adjust policies as needed)
 ALTER TABLE results ENABLE ROW LEVEL SECURITY;
